@@ -97,6 +97,7 @@ INSERT INTO Device (name, type, unit_price, stock, created_at) VALUES
   ('AirQuality Monitor', 'Sensor',     59.00,  75, '2025-04-05 14:50:00'),
   ('DoorLock Secure',    'Actuator',   99.99,  40, '2025-03-18 11:25:00'),
   ('PowerMeter Lite',    'Meter',      39.95, 120, '2025-04-10 16:10:00');
+  
 
 -- Orders (mostly for user_id=1)
 INSERT INTO `Order` (user_id, status, created_at, updated_at) VALUES

@@ -70,7 +70,6 @@ public class DeviceDAO {
             statement.setDouble(3, device.getPrice());
             statement.setInt(4, device.getStock());
             statement.setInt(5, device.getId());
-<<<<<<< HEAD
             statement.executeUpdate();
         }
     }
@@ -123,18 +122,4 @@ public class DeviceDAO {
             statement.executeUpdate();
         }
     }
-=======
-            statement.executeUpdate();
-        }
-    }
-
-    // Delete a device (Staff only)
-    public void deleteDevice(int id) throws SQLException {
-        String query = "DELETE FROM device WHERE device_id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, id);
-            statement.executeUpdate();
-        }
-    }
->>>>>>> main
 }
