@@ -11,6 +11,7 @@
         .device-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         .device-table th, .device-table td {
             border: 1px solid #ddd;
@@ -26,9 +27,8 @@
             border: 1px solid #ddd;
             background-color: #f9f9f9;
         }
-        .action-buttons {
-            display: flex;
-            gap: 5px;
+        .action-buttons form {
+            display: inline;
         }
     </style>
 </head>
@@ -39,58 +39,77 @@
 
     <h2>Device Catalogue</h2>
     
-    <!-- Device Search Form -->
+    <!-- Search Form -->
     <form action="DeviceServlet" method="get">
         <input type="hidden" name="action" value="search">
-        <input type="text" name="searchName" placeholder="Search by name">
+        <input type="text" name="searchName" placeholder="Search by name" 
+               value="${param.searchName}">
         <select name="searchType">
             <option value="">All Types</option>
             <c:forEach items="${deviceTypes}" var="type">
-                <option value="${type}">${type}</option>
+                <option value="${type}" ${param.searchType eq type ? 'selected' : ''}>
+                    ${type}
+                </option>
             </c:forEach>
         </select>
         <button type="submit">Search</button>
+        <a href="DeviceServlet">Clear</a>
     </form>
     
-    <!-- Staff Only: Add Device Button -->
-    <c:if test="${user.staff}">
-        <button onclick="toggleDeviceForm()">Add New Device</button>
+    <!-- Show Add/Edit Form based on request parameter -->
+    <c:if test="${not empty param.showForm or not empty param.editId}">
+        <div class="device-form">
+            <form action="DeviceServlet" method="post">
+                <input type="hidden" name="action" 
+                       value="${not empty param.editId ? 'update' : 'add'}">
+                
+                <c:if test="${not empty param.editId}">
+                    <input type="hidden" name="deviceId" value="${param.editId}">
+                </c:if>
+                
+                <div>
+                    <label for="name">Device Name:</label>
+                    <input type="text" id="name" name="name" required
+                           value="${not empty param.editId ? deviceToEdit.name : ''}">
+                </div>
+                
+                <div>
+                    <label for="type">Device Type:</label>
+                    <select id="type" name="type" required>
+                        <c:forEach items="${deviceTypes}" var="type">
+                            <option value="${type}" 
+                                ${(not empty param.editId and deviceToEdit.type eq type) ? 'selected' : ''}>
+                                ${type}
+                            </option>
+                        </c:forEach>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="price">Unit Price:</label>
+                    <input type="number" step="0.01" id="price" name="price" required
+                           value="${not empty param.editId ? deviceToEdit.price : ''}">
+                </div>
+                
+                <div>
+                    <label for="stock">Stock Quantity:</label>
+                    <input type="number" id="stock" name="stock" required
+                           value="${not empty param.editId ? deviceToEdit.stock : ''}">
+                </div>
+                
+                <button type="submit">Save</button>
+                <a href="DeviceServlet">Cancel</a>
+            </form>
+        </div>
     </c:if>
     
-    <!-- Device Form (Initially Hidden) -->
-    <div id="deviceForm" style="display: none;" class="device-form">
-        <form action="DeviceServlet" method="post">
-            <input type="hidden" name="action" id="formAction" value="add">
-            <input type="hidden" name="deviceId" id="deviceId" value="">
-            
-            <div>
-                <label for="name">Device Name:</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            
-            <div>
-                <label for="type">Device Type:</label>
-                <select id="type" name="type" required>
-                    <c:forEach items="${deviceTypes}" var="type">
-                        <option value="${type}">${type}</option>
-                    </c:forEach>
-                </select>
-            </div>
-            
-            <div>
-                <label for="price">Unit Price:</label>
-                <input type="number" step="0.01" id="price" name="price" required>
-            </div>
-            
-            <div>
-                <label for="stock">Stock Quantity:</label>
-                <input type="number" id="stock" name="stock" required>
-            </div>
-            
-            <button type="submit">Save</button>
-            <button type="button" onclick="toggleDeviceForm()">Cancel</button>
+    <!-- Staff Only: Add Device Button -->
+    <c:if test="${user.staff and empty param.showForm and empty param.editId}">
+        <form action="DeviceServlet" method="get" style="display:inline;">
+            <input type="hidden" name="showForm" value="true">
+            <button type="submit">Add New Device</button>
         </form>
-    </div>
+    </c:if>
     
     <!-- Device List Table -->
     <table class="device-table">
@@ -116,11 +135,15 @@
                     <td>${device.stock}</td>
                     <c:if test="${user.staff}">
                         <td class="action-buttons">
-                            <button onclick="editDevice(${device.id}, '${device.name}', '${device.type}', ${device.price}, ${device.stock})">Edit</button>
-                            <form action="DeviceServlet" method="post" style="display:inline;">
+                            <form action="DeviceServlet" method="get">
+                                <input type="hidden" name="editId" value="${device.id}">
+                                <button type="submit">Edit</button>
+                            </form>
+                            <form action="DeviceServlet" method="post" 
+                                  onsubmit="return confirm('Are you sure you want to delete this device?')">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="deviceId" value="${device.id}">
-                                <button type="submit" onclick="return confirm('Are you sure you want to delete this device?')">Delete</button>
+                                <button type="submit">Delete</button>
                             </form>
                         </td>
                     </c:if>
@@ -128,33 +151,5 @@
             </c:forEach>
         </tbody>
     </table>
-
-    <script>
-        function toggleDeviceForm() {
-            const form = document.getElementById('deviceForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
-            
-            // Reset form when showing
-            if (form.style.display === 'block') {
-                document.getElementById('formAction').value = 'add';
-                document.getElementById('deviceId').value = '';
-                document.getElementById('name').value = '';
-                document.getElementById('type').value = '';
-                document.getElementById('price').value = '';
-                document.getElementById('stock').value = '';
-            }
-        }
-        
-        function editDevice(id, name, type, price, stock) {
-            document.getElementById('formAction').value = 'update';
-            document.getElementById('deviceId').value = id;
-            document.getElementById('name').value = name;
-            document.getElementById('type').value = type;
-            document.getElementById('price').value = price;
-            document.getElementById('stock').value = stock;
-            
-            document.getElementById('deviceForm').style.display = 'block';
-        }
-    </script>
 </body>
 </html>

@@ -36,9 +36,15 @@ public class DeviceListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            String action = request.getParameter("action");
+            // Handle edit request
+            if (request.getParameter("editId") != null) {
+                int deviceId = Integer.parseInt(request.getParameter("editId"));
+                Device deviceToEdit = deviceDAO.getDeviceById(deviceId);
+                request.setAttribute("deviceToEdit", deviceToEdit);
+            }
 
-            if ("search".equals(action)) {
+            // Handle search or get all devices
+            if ("search".equals(request.getParameter("action"))) {
                 String name = request.getParameter("searchName");
                 String type = request.getParameter("searchType");
                 List<Device> devices = deviceDAO.searchDevices(name, type);
@@ -60,6 +66,11 @@ public class DeviceListServlet extends HttpServlet {
         } catch (SQLException e) {
             Logger.getLogger(DeviceListServlet.class.getName()).log(Level.SEVERE, "Error fetching devices", e);
             request.setAttribute("errorMessage", "Unable to fetch device list. Please try again later.");
+            RequestDispatcher dispatcher = request.getRequestDispatcher("error.jsp");
+            dispatcher.forward(request, response);
+        } catch (NumberFormatException e) {
+            Logger.getLogger(DeviceListServlet.class.getName()).log(Level.SEVERE, "Invalid device ID", e);
+            request.setAttribute("errorMessage", "Invalid device ID.");
             RequestDispatcher dispatcher = request.getRequestDispatcher("error.jsp");
             dispatcher.forward(request, response);
         }
