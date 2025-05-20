@@ -52,7 +52,12 @@ public class DeviceListServlet extends HttpServlet {
                 request.setAttribute("deviceList", devices);
             } else {
                 List<Device> devices = deviceDAO.getAllDevices();
-                request.setAttribute("deviceList", devices);
+                request.setAttribute("deviceList", devices); // Set device list for the view
+                Set<String> deviceTypes = new HashSet<>();
+                for (Device device : devices) { // Use the stored devices list
+                    deviceTypes.add(device.getType());
+                }
+                request.setAttribute("deviceTypes", deviceTypes);
             }
 
             // Get unique device types for filter dropdown
@@ -92,6 +97,7 @@ public class DeviceListServlet extends HttpServlet {
                             Double.parseDouble(request.getParameter("price")),
                             Integer.parseInt(request.getParameter("stock")));
                     deviceDAO.addDevice(newDevice);
+                    request.setAttribute("successMessage", "Device added successfully!");
                     break;
 
                 case "update":
@@ -102,11 +108,13 @@ public class DeviceListServlet extends HttpServlet {
                             Double.parseDouble(request.getParameter("price")),
                             Integer.parseInt(request.getParameter("stock")));
                     deviceDAO.updateDevice(updatedDevice);
+                    request.setAttribute("successMessage", "Device Updated successfully!");
                     break;
 
                 case "delete":
                     int deviceId = Integer.parseInt(request.getParameter("deviceId"));
                     deviceDAO.deleteDevice(deviceId);
+                    request.setAttribute("successMessage", "Device deleted successfully!");
                     break;
             }
 
