@@ -41,20 +41,20 @@
     
     <!-- Search Form -->
     <form action="DeviceServlet" method="get">
-        <input type="hidden" name="action" value="search">
-        <input type="text" name="searchName" placeholder="Search by name" 
-               value="${param.searchName}">
-        <select name="searchType">
-            <option value="">All Types</option>
-            <c:forEach items="${deviceTypes}" var="type">
-                <option value="${type}" ${param.searchType eq type ? 'selected' : ''}>
-                    ${type}
-                </option>
-            </c:forEach>
-        </select>
-        <button type="submit">Search</button>
-        <a href="DeviceServlet">Clear</a>
-    </form>
+    <input type="hidden" name="action" value="search">
+    <input type="text" name="searchName" placeholder="Search by name" 
+           value="${param.searchName}">  <!-- Retains search term after submission -->
+    <select name="searchType">
+        <option value="">All Types</option>
+        <c:forEach items="${deviceTypes}" var="type">
+            <option value="${type}" ${param.searchType eq type ? 'selected' : ''}>
+                ${type}
+            </option>
+        </c:forEach>
+    </select>
+    <button type="submit">Search</button>
+    <a href="DeviceServlet">Clear</a>  <!-- Reset filters -->
+</form>
     
     <!-- Show Add/Edit Form based on request parameter -->
     <c:if test="${not empty param.showForm or not empty param.editId}">
