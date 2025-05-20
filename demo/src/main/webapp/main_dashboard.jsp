@@ -53,6 +53,12 @@
             <a href="logout.jsp" class="nav-item">Logout</a>
         </div>
     </nav>
+    <c:if test="${not empty successMessage}">
+        <div class="success-message">${successMessage}</div>
+    </c:if>
+    <c:if test="${not empty errorMessage}">
+        <div class="error-message">${errorMessage}</div>
+    </c:if>
     <h2>Device Catalogue</h2>
     
     <!-- Search Form -->
