@@ -27,6 +27,17 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>DeviceListServlet</servlet-name>
+        <servlet-class>controller.DeviceListServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>DeviceListServlet</servlet-name>
+        <url-pattern>/DeviceListServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>OrderServlet</servlet-name>
         <servlet-class>controller.OrderServlet</servlet-class>
         <load-on-startup>1</load-on-startup>

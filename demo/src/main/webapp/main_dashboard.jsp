@@ -8,35 +8,51 @@
 <head>
     <title>IoTBay - Dashboard</title>
     <style>
-        .device-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .device-table th, .device-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .device-table th {
-            background-color: #f2f2f2;
-        }
-        .device-form {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-        }
-        .action-buttons form {
-            display: inline;
-        }
+           .add-to-order-btn {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .add-to-order-btn:hover {
+        background-color: #218838;
+    }
+    .button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .button:hover {
+        background-color: #0056b3;
+    }
+    .error-message {
+        color: red;
+        margin: 10px 0;
+    }
+    .success-message {
+        color: green;
+        margin: 10px 0;
+    }
+
     </style>
 </head>
 <body>
-    <h1>Main Dashboard</h1>
-    <p>Logged in as: ${user.email} (${user.staff ? 'Staff' : 'Customer'})</p>
-    <a href="logout.jsp">Logout</a>
+    
 
+<nav class="navbar">
+        <a href="main_dashboard.jsp" class="nav-item current">Main Dashboard</a>
+        <p>Logged in as: ${user.email} (${user.staff ? 'Staff' : 'Customer'})</p>
+        <a href="order.jsp" class="nav-item">View Orders</a>
+        <a href="payment_history.jsp" class="nav-item">Payment History</a>
+        <div class="nav-right">
+            <a href="logout.jsp" class="nav-item">Logout</a>
+        </div>
+    </nav>
     <h2>Device Catalogue</h2>
     
     <!-- Search Form -->
@@ -120,6 +136,7 @@
                 <th>Type</th>
                 <th>Price</th>
                 <th>Stock</th>
+                <th>Action</th>
                 <c:if test="${user.staff}">
                     <th>Actions</th>
                 </c:if>
@@ -133,6 +150,13 @@
                     <td>${device.type}</td>
                     <td>$${device.price}</td>
                     <td>${device.stock}</td>
+                    <td>
+                        <form method="POST" action="OrderServlet" style="margin:0;">
+                            <input type="hidden" name="action" value="addToOrder"/>
+                            <input type="hidden" name="deviceId" value="${device.id}"/>
+                            <button type="submit" class="add-to-order-btn">Add to Order</button>
+                        </form>
+                    </td>
                     <c:if test="${user.staff}">
                         <td class="action-buttons">
                             <form action="DeviceServlet" method="get">
@@ -151,5 +175,12 @@
             </c:forEach>
         </tbody>
     </table>
+    <div style="margin-top:30px;">
+        <a href="order.jsp" class="nav-item">View Order</a>
+    </div>
 </body>
 </html>
+
+
+
+

@@ -91,7 +91,7 @@ public class DeviceDAO {
                 if (resultSet.next()) {
                     return new Device(
                             resultSet.getInt("device_id"),
-                            resultSet.getString("name"),
+                            resultSet.getString("device_name"),
                             resultSet.getString("type"),
                             resultSet.getDouble("unit_price"),
                             resultSet.getInt("stock"));
