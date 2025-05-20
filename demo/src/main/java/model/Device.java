@@ -76,5 +76,5 @@ public class Device {
                 ", stock=" + stock +
                 '}';
     }
-    
+
 }
